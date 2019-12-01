@@ -1,4 +1,4 @@
-package com.test.springcloud.rest.webservices.restfulwebservices.controller.bean;
+package com.test.springcloud.rest.webservices.restfulwebservices.bean;
 
 public class HelloWorldBean {
 
