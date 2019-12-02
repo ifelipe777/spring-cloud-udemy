@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,6 +19,7 @@ public class UserDaoService {
         users.add(new User(1, "Adam", new Date()));
         users.add(new User(2, "Eve", new Date()));
         users.add(new User(3, "Jack", new Date()));
+        users.add(new User(4, "Test", new Date()));
     }
 
     public List<User> findAll(){
@@ -33,7 +35,11 @@ public class UserDaoService {
         return user;
     }
 
-    public User findOne(final Integer id) {
-        return users.stream().filter(u -> u.getId().equals(id)).collect(Collectors.toList()).get(0);
+    public Optional<User> findOne(final Integer id) {
+        return users.stream().filter(u -> u.getId().equals(id)).findFirst();
+    }
+
+    public Boolean deleteById(final Integer id) {
+        return users.removeIf(u -> u.getId().equals(id));
     }
 }
