@@ -1,6 +1,8 @@
 package com.test.springcloud.rest.webservices.restfulwebservices.service;
 
 import com.test.springcloud.rest.webservices.restfulwebservices.bean.User;
+import com.test.springcloud.rest.webservices.restfulwebservices.repository.JpaUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,33 +15,27 @@ import java.util.stream.Collectors;
 @Component
 public class UserDaoService {
 
-    private static List<User> users = new ArrayList<>();
-
-    static {
-        users.add(new User(1, "Adam", new Date()));
-        users.add(new User(2, "Eve", new Date()));
-        users.add(new User(3, "Jack", new Date()));
-        users.add(new User(4, "Test", new Date()));
-    }
+    @Autowired
+    private JpaUserRepository userRepository;
 
     public List<User> findAll(){
-        return users;
+        return userRepository.findAll();
     }
 
     public User save(final User user) {
-        if(Objects.isNull(user.getId())) {
-            user.setId(users.size() + 1);
-        }
-        users.add(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     public Optional<User> findOne(final Integer id) {
-        return users.stream().filter(u -> u.getId().equals(id)).findFirst();
+        return userRepository.findById(id);
     }
 
     public Boolean deleteById(final Integer id) {
-        return users.removeIf(u -> u.getId().equals(id));
+        try {
+            userRepository.deleteById(id);
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            return Boolean.FALSE;
+        }
     }
 }
