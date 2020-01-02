@@ -1,6 +1,7 @@
 package com.test.springcloud.microservices.currencyconversionservice.controller;
 
 import com.test.springcloud.microservices.currencyconversionservice.CurrencyConversion;
+import com.test.springcloud.microservices.currencyconversionservice.proxy.CurrencyExchangeServiceProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ public class CurrencyConversionController {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private CurrencyExchangeServiceProxy proxy;
+
     @GetMapping("/currency-converter/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversion convertCurrency(@PathVariable final String from, @PathVariable final String to,
                                               @PathVariable Integer quantity) {
@@ -33,7 +37,20 @@ public class CurrencyConversionController {
         CurrencyConversion conversion = responseEntity.getBody();
         conversion.setPort(Integer.parseInt(environment.getProperty("local.server.port")));
         conversion.setQuantity(BigDecimal.valueOf(quantity));
-        conversion.setTotalCalculated(conversion.getConversionMultiple().multiply(conversion.getQuantity()z));
+        conversion.setTotalCalculated(conversion.getConversionMultiple().multiply(conversion.getQuantity()));
+
+        return conversion;
+
+    }
+
+    @GetMapping("/currency-converter-feign/from/{from}/to/{to}/quantity/{quantity}")
+    public CurrencyConversion convertCurrencyFeign(@PathVariable final String from, @PathVariable final String to,
+                                              @PathVariable Integer quantity) {
+
+        CurrencyConversion conversion = proxy.retrieveExchangeValue(from, to);
+        conversion.setPort(conversion.getPort());
+        conversion.setQuantity(BigDecimal.valueOf(quantity));
+        conversion.setTotalCalculated(conversion.getConversionMultiple().multiply(conversion.getQuantity()));
 
         return conversion;
 
