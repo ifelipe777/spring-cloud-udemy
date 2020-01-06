@@ -2,6 +2,8 @@ package com.test.springcloud.microservices.currencyconversionservice.controller;
 
 import com.test.springcloud.microservices.currencyconversionservice.CurrencyConversion;
 import com.test.springcloud.microservices.currencyconversionservice.proxy.CurrencyExchangeServiceProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @RestController
 public class CurrencyConversionController {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private Environment environment;
@@ -48,6 +52,7 @@ public class CurrencyConversionController {
                                               @PathVariable Integer quantity) {
 
         CurrencyConversion conversion = proxy.retrieveExchangeValue(from, to);
+        logger.info("{}", conversion);
         conversion.setPort(conversion.getPort());
         conversion.setQuantity(BigDecimal.valueOf(quantity));
         conversion.setTotalCalculated(conversion.getConversionMultiple().multiply(conversion.getQuantity()));
